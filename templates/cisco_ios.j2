@@ -1,0 +1,27 @@
+{# Intended configuration rendered from NetBox data #}
+hostname {{ inventory_hostname }}
+!
+ip ssh version 2
+no ip http server
+!
+{% for server in ntp_servers %}
+ntp server {{ server }}
+{% endfor %}
+!
+{% for intf in interfaces | default([]) %}
+interface {{ intf.name }}
+ description {{ intf.description | default('managed-by-netbox', true) }}
+{% for ip in intf.ip_addresses | default([]) %}
+ ip address {{ ip.address | ansible.utils.ipaddr('address') }} {{ ip.address | ansible.utils.ipaddr('netmask') }}
+{% endfor %}
+{% if intf.enabled %}
+ no shutdown
+{% else %}
+ shutdown
+{% endif %}
+!
+{% endfor %}
+line vty 0 4
+ transport input ssh
+!
+end

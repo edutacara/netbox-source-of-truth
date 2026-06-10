@@ -1,0 +1,33 @@
+---
+# Renders the intended configuration of every device in NetBox to
+# intended_configs/<hostname>.cfg, using the device's platform to pick
+# the right template. NetBox is the single source of truth: hostname,
+# interfaces, descriptions and IPs all come from the inventory plugin.
+#
+# Usage:
+#   export NETBOX_API=http://localhost:8000 NETBOX_TOKEN=<token>
+#   ansible-playbook playbooks/render_intended_configs.yml
+
+- name: Render intended configurations from NetBox data
+  hosts: all
+  gather_facts: false
+  vars:
+    output_dir: "{{ playbook_dir }}/../intended_configs"
+    platform_template: >-
+      {{ 'cisco_ios.j2' if ansible_network_os == 'cisco.ios.ios'
+         else 'juniper_junos.j2' }}
+  tasks:
+    - name: Ensure output directory exists
+      ansible.builtin.file:
+        path: "{{ output_dir }}"
+        state: directory
+        mode: "0755"
+      delegate_to: localhost
+      run_once: true
+
+    - name: Render intended configuration
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/../templates/{{ platform_template }}"
+        dest: "{{ output_dir }}/{{ inventory_hostname }}.cfg"
+        mode: "0644"
+      delegate_to: localhost

@@ -1,0 +1,27 @@
+---
+# Pushes the previously rendered intended configs to the devices.
+# Run render_intended_configs.yml first, review the diffs with --check,
+# then apply.
+#
+# Usage:
+#   ansible-playbook playbooks/deploy_intended_configs.yml --check --diff
+#   ansible-playbook playbooks/deploy_intended_configs.yml --diff
+
+- name: Deploy intended configuration to Cisco IOS devices
+  hosts: platforms_ios
+  gather_facts: false
+  tasks:
+    - name: Apply rendered configuration
+      cisco.ios.ios_config:
+        src: "{{ playbook_dir }}/../intended_configs/{{ inventory_hostname }}.cfg"
+        save_when: changed
+
+- name: Deploy intended configuration to Juniper Junos devices
+  hosts: platforms_junos
+  gather_facts: false
+  tasks:
+    - name: Load rendered configuration (merge) and commit
+      junipernetworks.junos.junos_config:
+        src: "{{ playbook_dir }}/../intended_configs/{{ inventory_hostname }}.cfg"
+        src_format: set
+        comment: "deploy from NetBox source of truth"

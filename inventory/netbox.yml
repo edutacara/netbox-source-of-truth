@@ -1,0 +1,19 @@
+---
+# Dynamic inventory pulled from NetBox.
+# The plugin reads NETBOX_API and NETBOX_TOKEN from the environment.
+plugin: netbox.netbox.nb_inventory
+validate_certs: false
+
+# Fetch interfaces (with their IPs) so templates can render them
+interfaces: true
+
+group_by:
+  - platforms
+  - sites
+  - device_roles
+
+compose:
+  ansible_host: primary_ip4.address | ansible.utils.ipaddr('address')
+  ansible_network_os: >-
+    {'ios': 'cisco.ios.ios',
+     'junos': 'junipernetworks.junos.junos'}[platforms[0]]

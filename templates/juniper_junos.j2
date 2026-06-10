@@ -1,0 +1,16 @@
+{# Intended configuration (set format) rendered from NetBox data #}
+set system host-name {{ inventory_hostname }}
+set system services ssh protocol-version v2
+set system services netconf ssh
+{% for server in ntp_servers %}
+set system ntp server {{ server }}
+{% endfor %}
+{% for intf in interfaces | default([]) %}
+set interfaces {{ intf.name }} description "{{ intf.description | default('managed-by-netbox', true) }}"
+{% for ip in intf.ip_addresses | default([]) %}
+set interfaces {{ intf.name }} unit 0 family inet address {{ ip.address }}
+{% endfor %}
+{% if not intf.enabled %}
+set interfaces {{ intf.name }} disable
+{% endif %}
+{% endfor %}

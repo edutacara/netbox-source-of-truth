@@ -1,0 +1,12 @@
+---
+collections:
+  - name: netbox.netbox
+    version: ">=3.18.0"
+  - name: ansible.netcommon
+    version: ">=6.0.0"
+  - name: ansible.utils
+    version: ">=4.0.0"
+  - name: cisco.ios
+    version: ">=8.0.0"
+  - name: junipernetworks.junos
+    version: ">=8.0.0"

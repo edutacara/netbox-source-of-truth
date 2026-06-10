@@ -1,0 +1,8 @@
+---
+ansible_user: "{{ lookup('env', 'NET_USER') }}"
+ansible_password: "{{ lookup('env', 'NET_PASSWORD') }}"
+
+# Baseline rendered into every intended config
+ntp_servers:
+  - 10.0.0.10
+  - 10.0.0.11
