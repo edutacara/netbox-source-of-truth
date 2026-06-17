@@ -13,9 +13,6 @@
   gather_facts: false
   vars:
     output_dir: "{{ playbook_dir }}/../intended_configs"
-    platform_template: >-
-      {{ 'cisco_ios.j2' if ansible_network_os == 'cisco.ios.ios'
-         else 'juniper_junos.j2' }}
   tasks:
     - name: Ensure output directory exists
       ansible.builtin.file:
@@ -24,6 +21,10 @@
         mode: "0755"
       delegate_to: localhost
       run_once: true
+
+    - name: Resolve platform template name
+      ansible.builtin.set_fact:
+        platform_template: "{{ 'cisco_ios.j2' if ansible_network_os == 'cisco.ios.ios' else 'juniper_junos.j2' }}"
 
     - name: Render intended configuration
       ansible.builtin.template:

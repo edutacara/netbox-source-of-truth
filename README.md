@@ -35,7 +35,13 @@ it — no static inventory files, no hand-edited configs.
 ```bash
 # 1. Run NetBox locally (https://github.com/netbox-community/netbox-docker)
 git clone https://github.com/netbox-community/netbox-docker
-cd netbox-docker && docker compose up -d
+cd netbox-docker
+cp docker-compose.override.yml.example docker-compose.override.yml  # exposes port 8000
+docker compose up -d
+
+# create the first admin user
+docker compose exec netbox /opt/netbox/netbox/manage.py createsuperuser
+
 # create an API token in the NetBox UI (admin → API tokens)
 
 # 2. Install dependencies

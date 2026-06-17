@@ -13,3 +13,6 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
+
+# Local environment variables (tokens, credentials)
+.env
